@@ -19,7 +19,7 @@ class PlayState extends Phaser.State {
         this.timeToPlay = 45;
         this.timeExpired = 0;
 
-        const timeLabel = this.add.text(500, 38, "30", {font: "50px Fredoka One", fill: "red"});
+        const timeLabel = this.add.text(500, 38, "45", {font: "50px Fredoka One", fill: "red"});
 
         this.time.events.loop(100, () => {
             let currentTime = new Date();
