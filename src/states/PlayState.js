@@ -1,9 +1,15 @@
-import {checkMusic, createCustomSprite, createCustomButton} from '../objects';
+import {checkMusic, createCustomSprite, createCustomButton, createParticles} from '../objects';
 import Donut from '../objects/DonutConstructor';
 
 class PlayState extends Phaser.State {
     create() {
         this.add.sprite(0, 0, 'backgroundImage');
+
+        if (this.game.device.desktop === true) {
+            this.cursor = this.add.sprite(0, 0, 'cursor');
+
+            this.game.canvas.style.cursor = "none";
+        }
 
         this.destroySound = this.add.audio('destroyDonutsSound');
         this.selectSound = this.add.audio('swapSound');
@@ -265,6 +271,11 @@ class PlayState extends Phaser.State {
     }
 
     update() {
+        if (this.game.device.desktop === true) {
+            this.cursor.destroy();
+            this.cursor = this.add.sprite(this.input.x - 25, this.input.y - 10, 'cursor');
+        }
+
         if (this.activeDonut1 && !this.activeDonut2) {
             let hoverX = this.input.x;
             let hoverY = this.input.y - 120;
@@ -340,6 +351,8 @@ class PlayState extends Phaser.State {
                 }
 
                 let donut = matches[i][j];
+
+                createParticles(donut, this);
 
                 let donutPos = this.getDonutsPos(donut);
 

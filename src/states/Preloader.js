@@ -20,6 +20,15 @@ class Preloader extends Phaser.State {
                 '../assets/images/game/gem-04.png', '../assets/images/game/gem-05.png', '../assets/images/game/gem-06.png'
             ]
         );
+        this.load.images(
+            [
+                '1-particle', '2-particle', '3-particle', '4-particle', '5-particle', '6-particle'
+            ],
+            [
+                '../assets/images/particles/particle-1.png', '../assets/images/particles/particle-2.png', '../assets/images/particles/particle-3.png',
+                '../assets/images/particles/particle-4.png', '../assets/images/particles/particle-5.png', '../assets/images/particles/particle-1.png',
+            ]
+        );
         this.load.image('returnButton', '../assets/images/btn-return.png');
         this.load.image('donutRed', '../assets/images/game/gem-01.png');
         this.load.image('donutBlue', '../assets/images/game/gem-02.png');
