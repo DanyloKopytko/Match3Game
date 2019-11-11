@@ -1,7 +1,5 @@
-import {createCustomButton} from '../objects/createCustomButton';
+import {checkMusic, createCustomSprite, createCustomButton} from '../objects';
 import Donut from '../objects/DonutConstructor';
-import {checkMusic} from "../objects/chechMusic";
-import {createCustomSprite} from '../objects/createCustomSprite';
 
 class PlayState extends Phaser.State {
     create() {
@@ -15,7 +13,7 @@ class PlayState extends Phaser.State {
         this.timeToPlay = 45;
         this.timeExpired = 0;
 
-        let timeLabel = this.add.text(500, 38, "30", {font: "50px Fredoka One", fill: "red"});
+        const timeLabel = this.add.text(500, 38, "30", {font: "50px Fredoka One", fill: "red"});
 
         this.time.events.loop(100, () => {
             let currentTime = new Date();
@@ -31,7 +29,7 @@ class PlayState extends Phaser.State {
             timeLabel.text = seconds;
         });
 
-        let soundButton = createCustomButton(this, 10, 10, 'soundButton', 80, 80, () => {
+        const soundButton = createCustomButton(this, 10, 10, 'soundButton', 80, 80, () => {
             if (window['music'].mute) {
                 window['music'].mute = false;
 
@@ -45,7 +43,7 @@ class PlayState extends Phaser.State {
 
         checkMusic(soundButton);
 
-        let scoreTable = createCustomSprite(this, this.world.centerX - 170, this.world.centerY - 380, 'scoreTable', 380, 150);
+        const scoreTable = createCustomSprite(this, this.world.centerX - 170, this.world.centerY - 380, 'scoreTable', 380, 150);
 
         this.scoreText = this.add.text(this.world.centerX - 20, this.world.centerY - 351, '0', {
             font: '58px Fredoka One',
@@ -94,7 +92,7 @@ class PlayState extends Phaser.State {
             }
         }
 
-        this.time.events.add(600, () => {
+        this.time.events.add(700, () => {
             this.checkMatch();
         });
     }
@@ -143,7 +141,7 @@ class PlayState extends Phaser.State {
 
             });
 
-            this.time.events.add(600, () => {
+            this.time.events.add(800, () => {
                 this.activeDonutsReset();
                 this.checkMatch();
             });
@@ -305,6 +303,7 @@ class PlayState extends Phaser.State {
                 x: (this.activeDonut1.sprite.x - this.donutWidth / 2) / this.donutWidth,
                 y: (this.activeDonut1.sprite.y - 120 - this.donutWidth / 2) / this.donutWidth
             };
+
             let donut2Pos = {
                 x: (this.activeDonut2.sprite.x - this.donutWidth / 2) / this.donutWidth,
                 y: (this.activeDonut2.sprite.y - 120 - this.donutWidth / 2) / this.donutWidth
@@ -345,6 +344,7 @@ class PlayState extends Phaser.State {
                 let donutPos = this.getDonutsPos(donut);
 
                 matches[i][j].sprite.destroy();
+
                 if (donutPos.i !== -1 && donutPos.j !== -1) {
                     this.mainMatrix[donutPos.i][donutPos.j] = null;
                 }
