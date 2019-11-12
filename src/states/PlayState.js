@@ -5,11 +5,7 @@ class PlayState extends Phaser.State {
     create() {
         this.add.sprite(0, 0, 'backgroundImage');
 
-        if (this.game.device.desktop === true) {
-            this.cursor = this.add.sprite(0, 0, 'cursor');
-
-            this.game.canvas.style.cursor = "none";
-        }
+        this.checkForAnimationHint = false;
 
         this.destroySound = this.add.audio('destroyDonutsSound');
         this.selectSound = this.add.audio('swapSound');
@@ -34,6 +30,8 @@ class PlayState extends Phaser.State {
 
             timeLabel.text = seconds;
         });
+
+        this.timeForHint = new Date().getTime();
 
         const soundButton = createCustomButton(this, 10, 10, 'soundButton', 80, 80, () => {
             if (window['music'].mute) {
@@ -89,6 +87,134 @@ class PlayState extends Phaser.State {
         this.activeDonut2 = null;
     }
 
+    checkForPossibleMatches() {
+        let copiedMainMatrix = [];
+
+        for (let i = 0; i < this.mainMatrix.length; i++) {
+            let tempArr = [];
+
+            for (let j = 0; j < this.mainMatrix.length; j++) {
+                tempArr.push(this.mainMatrix[i][j]);
+            }
+
+            copiedMainMatrix.push(tempArr);
+        }
+
+
+        for (let i = 0; i < copiedMainMatrix.length; i++) {
+            for (let j = 0; j < copiedMainMatrix.length; j++) {
+                if (j - 1 >= 0) {
+                    let tempVarForSwap = copiedMainMatrix[i][j];
+                    copiedMainMatrix[i][j] = copiedMainMatrix[i][j - 1];
+                    copiedMainMatrix[i][j - 1] = tempVarForSwap;
+
+                    if (this.checkHintMatch(copiedMainMatrix).length >= 1) {
+                        tempVarForSwap = copiedMainMatrix[i][j];
+                        copiedMainMatrix[i][j] = copiedMainMatrix[i][j - 1];
+                        copiedMainMatrix[i][j - 1] = tempVarForSwap;
+
+                        return [i, j, i, j - 1];
+                    }
+
+                    tempVarForSwap = copiedMainMatrix[i][j];
+                    copiedMainMatrix[i][j] = copiedMainMatrix[i][j - 1];
+                    copiedMainMatrix[i][j - 1] = tempVarForSwap;
+
+                }
+                if (j + 1 <= 5) {
+                    let tempVarForSwap = copiedMainMatrix[i][j];
+                    copiedMainMatrix[i][j] = copiedMainMatrix[i][j + 1];
+                    copiedMainMatrix[i][j + 1] = tempVarForSwap;
+
+                    if (this.checkHintMatch(copiedMainMatrix).length >= 1) {
+
+                        tempVarForSwap = copiedMainMatrix[i][j];
+                        copiedMainMatrix[i][j] = copiedMainMatrix[i][j + 1];
+                        copiedMainMatrix[i][j + 1] = tempVarForSwap;
+
+                        return [i, j, i, j + 1];
+                    }
+
+                    tempVarForSwap = copiedMainMatrix[i][j];
+                    copiedMainMatrix[i][j] = copiedMainMatrix[i][j + 1];
+                    copiedMainMatrix[i][j + 1] = tempVarForSwap;
+
+                }
+                if (i - 1 >= 0) {
+                    let tempVarForSwap = copiedMainMatrix[i][j];
+                    copiedMainMatrix[i][j] = copiedMainMatrix[i - 1][j];
+                    copiedMainMatrix[i - 1][j] = tempVarForSwap;
+
+                    if (this.checkHintMatch(copiedMainMatrix).length >= 1) {
+                        tempVarForSwap = copiedMainMatrix[i][j];
+                        copiedMainMatrix[i][j] = copiedMainMatrix[i - 1][j];
+                        copiedMainMatrix[i - 1][j] = tempVarForSwap;
+
+                        return [i, j, i - 1, j];
+                    }
+
+                    tempVarForSwap = copiedMainMatrix[i][j];
+                    copiedMainMatrix[i][j] = copiedMainMatrix[i - 1][j];
+                    copiedMainMatrix[i - 1][j] = tempVarForSwap;
+
+                }
+                if (i + 1 <= 5) {
+                    let tempVarForSwap = copiedMainMatrix[i][j];
+                    copiedMainMatrix[i][j] = copiedMainMatrix[i + 1][j];
+                    copiedMainMatrix[i + 1][j] = tempVarForSwap;
+
+                    if (this.checkHintMatch(copiedMainMatrix).length >= 1) {
+                        tempVarForSwap = copiedMainMatrix[i][j];
+                        copiedMainMatrix[i][j] = copiedMainMatrix[i + 1][j];
+                        copiedMainMatrix[i + 1][j] = tempVarForSwap;
+
+                        return [i, j, i + 1, j];
+                    }
+
+                    tempVarForSwap = copiedMainMatrix[i][j];
+                    copiedMainMatrix[i][j] = copiedMainMatrix[i + 1][j];
+                    copiedMainMatrix[i + 1][j] = tempVarForSwap;
+                }
+            }
+        }
+    }
+
+    checkHintMatch(copiedMatrix) {
+        let combinations = [];
+
+        for (let i = 0; i < copiedMatrix.length; i++) {
+            let tempLine = copiedMatrix[i];
+
+            for (let j = 0; j < tempLine.length; j++) {
+                if (tempLine[j] && tempLine[j + 1] && tempLine[j + 2]) {
+
+                    if (tempLine[j].index === tempLine[j + 1].index && tempLine[j + 1].index === tempLine[j + 2].index) {
+                        combinations.push(tempLine[j], tempLine[j + 1], tempLine[j + 2]);
+
+                        return combinations;
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < copiedMatrix.length; i++) {
+            let tempRaw = copiedMatrix.map((value) => {
+                return value[i];
+            });
+
+            for (let j = 0; j < tempRaw.length; j++) {
+                if (tempRaw[j] && tempRaw[j + 1] && tempRaw[j + 2]) {
+
+                    if (tempRaw[j].index === tempRaw[j + 1].index && tempRaw[j + 1].index === tempRaw[j + 2].index) {
+                        combinations.push(tempRaw[j], tempRaw[j + 1], tempRaw[j + 2]);
+
+                        return combinations;
+                    }
+                }
+            }
+        }
+        return combinations;
+    }
+
     generateArray() {
         for (let i = 0; i < this.mainMatrix.length; i++) {
             for (let j = 0; j < this.mainMatrix.length; j++) {
@@ -106,11 +232,15 @@ class PlayState extends Phaser.State {
     addDonut(x, y) {
         let randomIndex = Math.floor(Math.random() * 6 + 1);
 
+        let donutShadow = createCustomSprite(this, ((x * this.donutWidth) + this.donutWidth / 2) - 20, 0, 'donutShadow', 80, 80);
+
         let donut = this.add.sprite((x * this.donutWidth) + this.donutWidth / 2, 0, this.indexes[randomIndex]);
 
         this.add.tween(donut).to({y: (y * this.donutHeight + (this.donutHeight / 2)) + 120}, 600, Phaser.Easing.Linear.In, true);
 
-        let tempDonut = new Donut(this.donutHeight, this.donutWidth, randomIndex, donut);
+        this.add.tween(donutShadow).to({y: (y * this.donutHeight + (this.donutHeight / 2)) + 90}, 600, Phaser.Easing.Linear.In, true);
+
+        let tempDonut = new Donut(this.donutHeight, this.donutWidth, randomIndex, donut, donutShadow);
 
         tempDonut.sprite.anchor.setTo(0.5, 0.5);
 
@@ -137,7 +267,7 @@ class PlayState extends Phaser.State {
         let combinations = this.getMatches();
 
         if (combinations.length > 0) {
-            this.time.events.add(300, () => {
+            this.time.events.add(100, () => {
                 this.destroyDonuts(combinations);
             });
 
@@ -214,7 +344,6 @@ class PlayState extends Phaser.State {
                                 combinations.push(groupOf3orMore);
                                 groupOf3orMore = [];
                             }
-
                         }
                     }
                 }
@@ -270,10 +399,38 @@ class PlayState extends Phaser.State {
         return combinations;
     }
 
+    hintAnimation() {
+        let arrayOfIndexes = this.checkForPossibleMatches();
+
+        this.game.time.events.add(600, () => {
+            let hintSprite = this.add.sprite(arrayOfIndexes[0] * this.donutWidth + (this.donutWidth / 2) - 40, (arrayOfIndexes[1] * this.donutHeight + (this.donutHeight / 2)) + 110, 'cursor');
+
+            this.add.tween(hintSprite).to({
+                x: arrayOfIndexes[2] * this.donutWidth + (this.donutWidth / 2) - 40,
+                y: (arrayOfIndexes[3] * this.donutHeight + (this.donutHeight / 2)) + 110
+            }, 600, Phaser.Easing.Linear.In, true);
+
+            this.game.time.events.add(600, () => {
+                hintSprite.destroy();
+            });
+
+            this.checkForAnimationHint = false;
+        });
+    }
+
     update() {
-        if (this.game.device.desktop === true) {
-            this.cursor.destroy();
-            this.cursor = this.add.sprite(this.input.x - 25, this.input.y - 10, 'cursor');
+        if (!this.activeDonut1) {
+
+            if (!this.checkForAnimationHint) {
+
+                if (new Date().getTime() / 1000 - this.timeForHint / 1000 > 7) {
+                    this.checkForAnimationHint = true;
+
+                    this.hintAnimation();
+                }
+            }
+        } else {
+            this.timeForHint = new Date().getTime();
         }
 
         if (this.activeDonut1 && !this.activeDonut2) {
@@ -336,6 +493,16 @@ class PlayState extends Phaser.State {
                 x: donut1Pos.x * this.donutWidth + (this.donutWidth / 2),
                 y: (donut1Pos.y * this.donutHeight + (this.donutHeight / 2)) + 120
             }, 200, Phaser.Easing.Linear.In, true);
+
+            this.add.tween(this.activeDonut1.spriteShadow).to({
+                x: (donut2Pos.x * this.donutWidth + (this.donutWidth / 2)) - 20,
+                y: (donut2Pos.y * this.donutHeight + (this.donutHeight / 2)) + 90
+            }, 200, Phaser.Easing.Linear.In, true);
+
+            this.add.tween(this.activeDonut2.spriteShadow).to({
+                x: (donut1Pos.x * this.donutWidth + (this.donutWidth / 2)) - 20,
+                y: (donut1Pos.y * this.donutHeight + (this.donutHeight / 2)) + 90
+            }, 200, Phaser.Easing.Linear.In, true);
         }
     }
 
@@ -357,6 +524,7 @@ class PlayState extends Phaser.State {
                 let donutPos = this.getDonutsPos(donut);
 
                 matches[i][j].sprite.destroy();
+                matches[i][j].spriteShadow.destroy();
 
                 if (donutPos.i !== -1 && donutPos.j !== -1) {
                     this.mainMatrix[donutPos.i][donutPos.j] = null;
@@ -388,12 +556,13 @@ class PlayState extends Phaser.State {
         for (let i = 0; i < this.mainMatrix.length; i++) {
             for (let j = this.mainMatrix[i].length - 1; j > 0; j--) {
                 if (this.mainMatrix[i][j] == null && this.mainMatrix[i][j - 1] !== null) {
-                    let tempDonut = new Donut(this.donutHeight, this.donutWidth, this.mainMatrix[i][j - 1].index, this.mainMatrix[i][j - 1].sprite);
+                    let tempDonut = new Donut(this.donutHeight, this.donutWidth, this.mainMatrix[i][j - 1].index, this.mainMatrix[i][j - 1].sprite, this.mainMatrix[i][j - 1].spriteShadow);
 
                     this.mainMatrix[i][j] = tempDonut;
                     this.mainMatrix[i][j - 1] = null;
 
                     this.add.tween(tempDonut.sprite).to({y: ((this.donutHeight * j) + (this.donutHeight / 2)) + 120}, 200, Phaser.Easing.Linear.In, true);
+                    this.add.tween(tempDonut.spriteShadow).to({y: ((this.donutHeight * j) + (this.donutHeight / 2)) + 90}, 200, Phaser.Easing.Linear.In, true);
 
                     j = this.mainMatrix[i].length;
                 }

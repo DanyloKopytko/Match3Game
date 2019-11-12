@@ -4,8 +4,6 @@ export class MainMenu extends Phaser.State {
     create() {
         this.add.sprite(0, 0, 'backgroundImage');
 
-        this.game.canvas.style.cursor = "default";
-
         const soundButton = createCustomButton(this, 900, 10, 'soundButton', 80, 80, () => {
             if (window['music'].mute) {
                 window['music'].mute = false;

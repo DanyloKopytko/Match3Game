@@ -33,6 +33,7 @@ class Preloader extends Phaser.State {
         this.load.image('donutRed', '../assets/images/game/gem-01.png');
         this.load.image('donutBlue', '../assets/images/game/gem-02.png');
         this.load.image('returnToMainMenu', '../assets/images/btn-mainMenu.png');
+        this.load.image('donutShadow', '../assets/images/game/shadow.png');
     }
 
     create() {
